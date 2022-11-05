@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/all.min2.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <style>
+        .container{
+            position: relative;
+        }
+       h1{
+        text-transform: uppercase;
+        letter-spacing: 3px;
+       }
+       .mainEl{
+        display: flex;
+        flex-direction: row;
+        width: 250px;
+        margin: 30px auto;
+       }
+      
+       input, button{
+        padding: 5px;
+        outline-style: none;
+        border-color: yellow;
+        /* box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); */
+        border-radius: 5px;
+        font-size: 20px;
+       }
+       input{
+        width: 350px;
+       }
+       button{
+        width: 50px;
+        text-align: center;
+        justify-items: center;
+        justify-content: center;
+        font-weight: bolder;
+        margin-left: 5px;
+       }
+       .card{
+        padding-left: 0;
+        min-width: 40%;
+        max-width: 40%;
+        margin: 0 auto;
+        font-size: 20px;
+        list-style: decimal inside;
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+       }
+       #doneDiv{
+        padding-left: 0;
+        font-size: 20px;
+        list-style: decimal inside;
+       }
+
+       h4,h5{
+        text-align: center;
+        text-decoration: underline;
+       }
+       span{
+        display: inline-block;
+        margin: 0 8px;
+        text-transform: uppercase;
+        min-width: 340px;
+       }
+       ul > li {
+        padding: 5px 5px;
+        margin: 5px;
+        border-bottom: 1px solid black;
+       }
+       ul > li > a:nth-child(3){
+        /* background-color: rgb(255, 225, 0); */
+        color: rgb(255, 0, 0);
+        padding: 1px;
+        border-radius: 10px;
+        text-decoration: none;
+        padding-top: 0;
+        font-size: 15px;
+       }
+       #tik{
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        padding: 10px;
+        cursor: pointer;
+        color: green;
+       }
+       .ha{
+        font-size: small;
+        font-weight: 400;
+        width: 100px;
+        transition: all 2s ease-in-out;
+
+       }
+       .hide-all{
+        width: 100px;
+        margin: 20px auto;
+        transition: all 2s ease-in-out;
+
+       }
+       .transition{
+        position: relative;
+        transition: all 2s ease-in-out;
+        transform: translate(400px, -100px) scale(2);
+        top: -20px;
+       }
+       .haEl{
+        background-color: pink;
+        transition: all 2s ease-in-out;
+        width: 60px;
+        border-radius: 50px;
+       }
+       .ektum{
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: center;
+       }
+       h4{
+        cursor: pointer;
+        text-decoration: none;
+       }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav-bar bg-warning d-flex ektum">
+            <h1 class="text-center py-2 text-white" >Todo List</h1>
+            <h3  class="h5 badge bg-danger p-3">0 / 0</h3>
+            <h4 class="badge bg-primary p-3 btn" id="clear">Clear Done Lists</h4>
+        </div>
+        
+        <div class="mainEl" >
+            <input class="" placeholder="Type Here Your Words" autofocus type="text">
+            <button> + </button>
+        </div>
+        <ul class="card"  id="list"><h4 class="h5">Todo Lists</h4></ul>
+        <hr>
+        <ul class="card" id="doneDivMain"><h5>Done Tasks</h5>
+            <ul id="doneDiv"></ul>
+        </ul>
+        <div class="hide-all"><Button class="ha">Hide All</Button></div>
+    </div>
+
+    <script>
+        let data = JSON.parse(localStorage.getItem('data')) || [];
+        data.filter(item =>!item.completed).map(item => createItem(item.content));
+        data.filter(item =>item.completed).map(item => createItem(item.content));
+        document.querySelector('#clear').onclick = ()=>{
+            document.querySelector('#doneDiv').textContent = "";
+            updateCount();
+        }
+        document.querySelector('button').onclick = ()=>{
+            
+            let content = document.querySelector('input').value;
+            if(content != ''){
+                createItem(content);
+                let data = JSON.parse( localStorage.getItem('data') ) || [];
+                data.push({content, completed: false});
+                localStorage.setItem('data', JSON.stringify(data));
+                document.querySelector('input').value = "";
+                updateCount();
+            }else{
+                alert('Please Type First! INPUT must not be Empty');
+                document.querySelector('input').focus();
+            }
+            
+        }
+        document.querySelector('input').onkeydown = (e)=>{
+            if(e.which === 13 && e.target.value != ''){
+             content = document.querySelector('input').value;
+
+                let data = JSON.parse( localStorage.getItem('data') ) || [];
+                data.push({content, completed: false});
+                localStorage.setItem('data', JSON.stringify(data));
+                createItem(e.target.value);
+                updateCount();
+                document.querySelector('input').value = "";
+                document.querySelector('input').focus();
+            }else if(e.which === 13 && e.target.value === ''){
+                alert('Please Type First! INPUT must not be Empty');
+            }
+        }
+        
+        function createItem (content){
+            var doneEl = document.createElement('a');
+            // doneEl.href = '#';
+            doneEl.innerHTML = `<input type="radio" name="" id="tik">`;
+            let liEl = document.createElement('li');
+            let spanEl = document.createElement('span');
+            spanEl.classList.add('allSpan');
+            spanEl.textContent = content;
+            spanEl.style.textTransform = 'capitalize';
+            document.querySelector('#list').appendChild(liEl);
+            document.querySelector('input').focus();
+            let deleteEl = document.createElement('a');
+            deleteEl.setAttribute('href', '#');
+            deleteEl.innerHTML = '<i class="fas fa-trash" ></i>';
+            liEl.append(doneEl, spanEl, deleteEl);
+        
+            doneEl.onclick = ()=>{
+                document.querySelector('#doneDiv').appendChild(doneEl.parentElement);
+                
+                updateCount();
+            }
+        deleteEl.onclick = ()=>{
+            deleteEl.parentElement.remove();
+            updateCount();
+            }
+    }
+        let cleanALlEL = document.querySelector('.ha');
+        let condition = true;
+        let hideAllEl = document.querySelector('.hide-all');
+        cleanALlEL.onclick = ()=>{
+            if(condition){
+                cleanALlEL.textContent = 'Show All';
+                showHide('white');
+                hideAllEl.classList.add('transition');
+                cleanALlEL.classList.add('haEl');
+                condition = false;
+            }else{
+                cleanALlEL.textContent = 'Hide All';
+                showHide('black');
+                setTimeout(() => {
+                    hideAllEl.classList.remove('transition');
+                    cleanALlEL.classList.remove('haEl');
+                }, 1000);
+                condition = true;
+            }
+            
+        }
+        function showHide(er){
+            let allSpanEl = document.querySelectorAll('.allSpan');
+            for (let i = 0; i < allSpanEl.length; i++) {
+                allSpanEl[i].style.color = er;
+    
+            }
+        }
+
+        document.addEventListener('load', updateCount);
+        function updateCount(){
+            let listLength = document.querySelectorAll('#list li').length;
+            let doneLength = document.querySelectorAll('#doneDiv li').length;
+            listLast = doneLength + listLength;
+            document.querySelector('h3').innerText = listLength + ' / ' + listLast;
+        }
+        updateCount();
+        
+        
+    </script>
+</body>
+</html>
